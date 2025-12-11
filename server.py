@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from instagpy import InstaGPy
 
 app = Flask(__name__)
-insta = InstaGPy()
+insta = InstaGPy(session_ids=["66323529774%3AbyzpHdVLeL4OV1%3A28%3AAYjO16Z8r1SxYYSnOO0QsqbF-PeH8XCH4gZSEuGyvg"])
 
 @app.route("/api/instagram-user")
 def instagram_user():
@@ -33,5 +33,6 @@ def instagram_user():
 if __name__ == "__main__":
    import os
 app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
 
 
