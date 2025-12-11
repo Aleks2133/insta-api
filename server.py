@@ -1,21 +1,27 @@
 from flask import Flask, request, jsonify
 from instagpy import InstaGPy
+import os
 
 app = Flask(__name__)
-insta = InstaGPy(session_ids=["66323529774%3AbyzpHdVLeL4OV1%3A28%3AAYjO16Z8r1SxYYSnOO0QsqbF-PeH8XCH4gZSEuGyvg"])
+
+# Twoja sesja Instagram
+insta = InstaGPy(session_ids=[
+    "66323529774%3AbyzpHdVLeL4OV1%3A28%3AAYjO16Z8r1SxYYSnOO0QsqbF-PeH8XCH4gZSEuGyvg"
+])
 
 @app.route("/api/instagram-user")
 def instagram_user():
     username = request.args.get("username", "").strip()
-    
+
     if not username:
         return jsonify({"error": "Brak nazwy użytkownika"}), 400
-    
+
     try:
         user = insta.get_user_basic_details(username, pretty_print=False)
+
         if not user:
-            return jsonify({"error": "Nie znaleziono użytkownika"}), 404
-        
+            return jsonify({"error": "Nie znaleziono użytkownika lub Instagram zablokował zapytanie"}), 404
+
         data = {
             "id": user.get("id"),
             "username": user.get("username"),
@@ -27,16 +33,12 @@ def instagram_user():
             "is_verified": user.get("is_verified")
         }
         return jsonify(data)
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+# Render ustawia PORT dynamicznie → musimy odczytać go z ENV
 if __name__ == "__main__":
-   import os
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
-
-
-
-
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
